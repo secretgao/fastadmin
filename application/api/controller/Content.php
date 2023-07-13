@@ -37,9 +37,16 @@ class Content extends Api
         //查询news
         $models = $model->where(['status' => 'normal']);
 
-        $data = collection($models->order('id desc')->limit($offset,$limit)->field('title,litetitle,avatar,detail')->select())->toArray();
+        $data = collection($models->order('id desc')->limit($offset,$limit)->field('id,title,litetitle,avatar,detail')->select())->toArray();
         //model被重置了
         $models = $model->where(['status' => 'normal']);
+        $host = $_SERVER['HTTP_HOST']; 
+        if ($data){
+          foreach($data as &$item){
+                $item['avatar'] = 'http://'.$host.$item['avatar'];
+          }
+
+        } 
         $num = $models->count();
         $this->success('返回成功', ['list' => $data ,'count' => $num, 'page' => $page]);
     }
@@ -56,7 +63,7 @@ class Content extends Api
             $id = $this->request->post("id");
         }
         $models = $model->where(['status' => 'normal', 'id' => $id]);
-        $data = $models->field('title,litetitle,avatar,detail')->find();
+        $data = $models->field('id,title,litetitle,avatar,detail')->find();
 
 
         $this->success('返回成功', $data ? $data->toArray() : []);
@@ -108,7 +115,7 @@ class Content extends Api
             $models->where(['cateid' => $cate]);
         }
 
-        $data = collection($models->order('id desc')->limit($offset,$limit)->field('title,litetitle,avatar,detail')->select())->toArray();
+        $data = collection($models->order('id desc')->limit($offset,$limit)->field('id,cateid,title,litetitle,avatar,detail')->select())->toArray();
         //model这里重置了
         $models = $model->where(['status' => 'normal']);
         if($cate){
@@ -130,7 +137,7 @@ class Content extends Api
             $id = $this->request->post("id");
         }
         $models = $model->where(['status' => 'normal', 'id' => $id]);
-        $data = $models->field('title,litetitle,avatar,detail')->find();
+        $data = $models->field('id,cateid,title,litetitle,avatar,detail')->find();
 
 
         $this->success('返回成功', $data ? $data->toArray() : []);
