@@ -10,7 +10,7 @@ use app\common\controller\Api;
 class Content extends Api
 {
 
-    protected $noNeedLogin = ['news', 'cate', 'product', 'product_detail', 'news_detail'];
+    protected $noNeedLogin = ['news', 'cate', 'product', 'product_detail', 'news_detail', 'headimg'];
 
     /**
      *
@@ -37,7 +37,7 @@ class Content extends Api
         //查询news
         $models = $model->where(['status' => 'normal']);
 
-        $data = collection($models->order('id desc')->limit($offset,$limit)->field('id,title,litetitle,avatar,detail')->select())->toArray();
+        $data = collection($models->order('weigh desc,id desc')->limit($offset,$limit)->field('id,title,litetitle,avatar,detail')->select())->toArray();
         //model被重置了
         $models = $model->where(['status' => 'normal']);
         $host = $_SERVER['HTTP_HOST']; 
@@ -82,7 +82,7 @@ class Content extends Api
         $model = model('app\admin\model\content\Category');
 
 
-        $data = collection($model->where(['status' => 'normal'])->order('id desc')->select())->toArray();
+        $data = collection($model->where(['status' => 'normal'])->order('weigh desc,id desc')->select())->toArray();
 
         $res = [];
         foreach ($data as $key => $val) {
@@ -115,7 +115,7 @@ class Content extends Api
             $models->where(['cateid' => $cate]);
         }
 
-        $data = collection($models->order('id desc')->limit($offset,$limit)->field('id,cateid,title,litetitle,avatar,detail')->select())->toArray();
+        $data = collection($models->order('weigh desc,id desc')->limit($offset,$limit)->field('id,cateid,title,litetitle,avatar,detail')->select())->toArray();
         //model这里重置了
         $models = $model->where(['status' => 'normal']);
         if($cate){
@@ -141,5 +141,18 @@ class Content extends Api
 
 
         $this->success('返回成功', $data ? $data->toArray() : []);
+    }
+
+    /**
+     *
+     * http://dev.fadmin.com/index.php/api/content/headimg
+     */
+    public function headimg(){
+
+        $model = model('Attachment');
+
+        $data = collection($model->where(['category' => 'categoryHead'])->order('weigh desc,id desc')->field('url,filename')->select())->toArray();
+
+        $this->success('返回成功', $data);
     }
 }

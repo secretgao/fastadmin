@@ -25,6 +25,7 @@ return [
     'Storage'                  => '存储引擎',
     'Category1'                => '分类一',
     'Category2'                => '分类二',
+    'CategoryHead'                            => '轮播图',
     'Custom'                   => '自定义',
     'Unclassed'                => '未归类',
     'Category'                 => '类别',

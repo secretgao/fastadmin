@@ -30,9 +30,9 @@ return array (
   ),
   'attachmentcategory' => 
   array (
-    'category1' => 'Category1',
-    'category2' => 'Category2',
-    'custom' => 'Custom',
+    'categoryHead' => 'CategoryHead',
+//    'category2' => 'Category2',
+//    'custom' => 'Custom',
   ),
   'mail_type' => '1',
   'mail_smtp_host' => 'smtp.qq.com',

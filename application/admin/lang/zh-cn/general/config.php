@@ -62,6 +62,7 @@ return [
     'Attachment category'                  => '附件类别',
     'Category1'                            => '分类一',
     'Category2'                            => '分类二',
+    'CategoryHead'                            => '轮播图',
     'Rule tips'                            => '校验规则使用请参考Nice-validator文档',
     'Extend tips'                          => '扩展属性支持{id}、{name}、{group}、{title}、{value}、{content}、{rule}替换',
     'Mail type'                            => '邮件发送方式',

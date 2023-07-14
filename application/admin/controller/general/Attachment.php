@@ -40,6 +40,7 @@ class Attachment extends Backend
         if ($this->request->isAjax()) {
             $mimetypeQuery = [];
             $filter = $this->request->request('filter');
+            //$category = $_GET['category'];
             $filterArr = (array)json_decode($filter, true);
             if (isset($filterArr['category']) && $filterArr['category'] == 'unclassed') {
                 $filterArr['category'] = ',unclassed';
@@ -58,17 +59,28 @@ class Attachment extends Backend
             $this->request->get(['filter' => json_encode($filterArr)]);
 
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            if(!isset($filterArr['category'])){
+                $list = $this->model
+                    ->where($mimetypeQuery)
+                    ->where($where)
+                    ->whereNotIn('category',['categoryHead'])
+                    ->order($sort, $order)
+                    ->paginate($limit);
+            }else{
+                $list = $this->model
+                    ->where($mimetypeQuery)
+                    ->where($where)
+                    ->order($sort, $order)
+                    ->paginate($limit);
+            }
 
-            $list = $this->model
-                ->where($mimetypeQuery)
-                ->where($where)
-                ->order($sort, $order)
-                ->paginate($limit);
+
 
             $cdnurl = preg_replace("/\/(\w+)\.php$/i", '', $this->request->root());
             foreach ($list as $k => &$v) {
                 $v['fullurl'] = ($v['storage'] == 'local' ? $cdnurl : $this->view->config['upload']['cdnurl']) . $v['url'];
             }
+
             unset($v);
             $result = array("total" => $list->total(), "rows" => $list->items());
 
