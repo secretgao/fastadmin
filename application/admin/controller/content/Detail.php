@@ -47,6 +47,16 @@ class Detail extends Backend
     {
         //设置过滤方法
         $this->request->filter(['strip_tags', 'trim']);
+
+        //
+        $cateModel = model('app\admin\model\content\Category');
+        $cate = collection($cateModel->select())->toArray();
+        $cates = [];
+        foreach ($cate as $k => $v){
+            $cates[$v['id']] = $v['name'];
+        }
+
+        $this->assignconfig('cates', $cates);
         if ($this->request->isAjax()) {
             //如果发送的来源是Selectpage，则转发到Selectpage
             if ($this->request->request('keyField')) {
@@ -61,11 +71,17 @@ class Detail extends Backend
                 ->order($sort, $order)
                 ->paginate($limit);
 
-//            foreach ($list as $k => &$v) {
+
+            foreach ($list as $k => &$v) {
+                if($v['cateid']){
+                    $v['cateid'] = $cateModel->where(['id' => $v['cateid']])->value('name');
+                }else{
+                    $v['cateid'] = '';
+                }
 //                $groups = isset($adminGroupName[$v['id']]) ? $adminGroupName[$v['id']] : [];
 //                $v['groups'] = implode(',', array_keys($groups));
 //                $v['groups_text'] = implode(',', array_values($groups));
-//            }
+            }
             unset($v);
             $result = array("total" => $list->total(), "rows" => $list->items());
 

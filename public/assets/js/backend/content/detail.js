@@ -32,6 +32,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'id', title: 'ID'},
                         {field: 'title', title: __('Title')},
                         {field: 'litetitle', title: __('lTitle')},
+                        {field: 'cateid', title: __('CategoryName'),searchList: Object.assign({},Config.cates)},//
+                        //{field: 'cateName', title: __('CategoryName'),searchList: {},formatter: Table.api.formatter.status},//
                         {field: 'status', title: __("Status"), searchList: {"normal":__('Normal'),"hidden":__('Hidden')}, formatter: Table.api.formatter.status},
                         {field: 'createtime', title: __('Create time'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
                         {field: 'updatetime', title: __('Update time'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
