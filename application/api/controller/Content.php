@@ -153,6 +153,12 @@ class Content extends Api
 
         $data = collection($model->where(['category' => 'categoryHead'])->order('weigh desc,id desc')->field('url,filename')->select())->toArray();
 
+        $host = $_SERVER['HTTP_HOST']; 
+        if ($data){
+          foreach($data as &$item){
+                $item['url'] = 'http://'.$host.$item['url'];
+          }
+        } 
         $this->success('返回成功', $data);
     }
 }
