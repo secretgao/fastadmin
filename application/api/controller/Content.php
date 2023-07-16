@@ -26,7 +26,7 @@ class Content extends Api
         $model = model('app\admin\model\content\News');
 
         $pageSize = 10;
-        $page = $this->request->post("page");
+        $page = $this->request->get("page");
 
         if (!$page) {
             $page = 1;
@@ -99,9 +99,9 @@ class Content extends Api
     {
         $model = model('app\admin\model\content\Product');
 
-        $cate = $this->request->post("cate");
+        $cate = $this->request->get("cate");
         $pageSize = 10;
-        $page = $this->request->post("page");
+        $page = $this->request->get("page");
 
         if (!$page) {
             $page = 1;
