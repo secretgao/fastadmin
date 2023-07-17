@@ -121,6 +121,13 @@ class Content extends Api
         if($cate){
             $models->where(['cateid' => $cate]);
         }
+         $host = $_SERVER['HTTP_HOST']; 
+        if ($data){
+          foreach($data as &$item){
+                $item['avatar'] = 'http://'.$host.$item['avatar'];
+          }
+
+        } 
         $num = $models->count();
         $this->success('返回成功', ['list' => $data ,'count' => $num, 'page' => $page]);
     }
