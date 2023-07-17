@@ -124,7 +124,7 @@ class Content extends Api
          $host = $_SERVER['HTTP_HOST']; 
         if ($data){
           foreach($data as &$item){
-                $item['avatar'] = 'http://'.$host.$item['avatar'];
+                $item['img'] = 'http://'.$host.$item['avatar'];
           }
 
         } 
