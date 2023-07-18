@@ -10,7 +10,7 @@ use app\common\controller\Api;
 class Content extends Api
 {
 
-    protected $noNeedLogin = ['news', 'cate', 'product', 'product_detail', 'news_detail', 'headimg'];
+    protected $noNeedLogin = ['news', 'cate', 'product', 'product_detail', 'news_detail', 'headimg','submit_message'];
 
     /**
      *
@@ -37,29 +37,30 @@ class Content extends Api
         //查询news
         $models = $model->where(['status' => 'normal']);
 
-        $data = collection($models->order('weigh desc,id desc')->limit($offset,$limit)->field('id,title,litetitle,avatar,detail')->select())->toArray();
+        $data = collection($models->order('weigh desc,id desc')->limit($offset, $limit)->field('id,title,litetitle,avatar,detail')->select())->toArray();
         //model被重置了
         $models = $model->where(['status' => 'normal']);
-        $host = $_SERVER['HTTP_HOST']; 
-        if ($data){
-          foreach($data as &$item){
-                $item['avatar'] = 'http://'.$host.$item['avatar'];
-          }
+        $host = $_SERVER['HTTP_HOST'];
+        if ($data) {
+            foreach ($data as &$item) {
+                $item['avatar'] = 'http://' . $host . $item['avatar'];
+            }
 
-        } 
+        }
         $num = $models->count();
-        $this->success('返回成功', ['list' => $data ,'count' => $num, 'page' => $page]);
+        $this->success('返回成功', ['list' => $data, 'count' => $num, 'page' => $page]);
     }
 
     /**
      * 详情
      * /api/content/news_detail
      */
-    public function news_detail(){
+    public function news_detail()
+    {
         $model = model('app\admin\model\content\News');
 
         $id = $this->request->get("id");
-        if($this->request->isPost()){
+        if ($this->request->isPost()) {
             $id = $this->request->post("id");
         }
         $models = $model->where(['status' => 'normal', 'id' => $id]);
@@ -111,40 +112,42 @@ class Content extends Api
         $limit = $pageSize;
         //查询news
         $models = $model->where(['status' => 'normal']);
-        if($cate){
+        if ($cate) {
             $models->where(['cateid' => $cate]);
         }
 
-        $data = collection($models->order('weigh desc,id desc')->limit($offset,$limit)->field('id,cateid,title,litetitle,avatar,detail')->select())->toArray();
+        $data = collection($models->order('weigh desc,id desc')->limit($offset, $limit)->field('id,cateid,title,litetitle,avatar,detail')->select())->toArray();
         //model这里重置了
         $models = $model->where(['status' => 'normal']);
-        if($cate){
+        if ($cate) {
             $models->where(['cateid' => $cate]);
         }
-         $host = $_SERVER['HTTP_HOST']; 
-        if ($data){
-          foreach($data as &$item){
-                $item['img'] = 'http://'.$host.$item['avatar'];
-          }
+        $host = $_SERVER['HTTP_HOST'];
+        if ($data) {
+            foreach ($data as &$item) {
+                $item['img'] = 'http://' . $host . $item['avatar'];
+            }
 
-        } 
+        }
         $num = $models->count();
-        $this->success('返回成功', ['list' => $data ,'count' => $num, 'page' => $page]);
+        $this->success('返回成功', ['list' => $data, 'count' => $num, 'page' => $page]);
     }
 
     /**
      * 详情
      * /api/content/product_detail
+     * {"code":1,"msg":"返回成功","time":"1689682165","data":{"id":5,"cateid":1,"title":"1","litetitle":"1","avatar":"1","detail":"<p>3<\/p>","mes_avatar":"","mes":"33"}}
      */
-    public function product_detail(){
+    public function product_detail()
+    {
         $model = model('app\admin\model\content\Product');
 
         $id = $this->request->get("id");
-        if($this->request->isPost()){
+        if ($this->request->isPost()) {
             $id = $this->request->post("id");
         }
         $models = $model->where(['status' => 'normal', 'id' => $id]);
-        $data = $models->field('id,cateid,title,litetitle,avatar,detail')->find();
+        $data = $models->field('id,cateid,title,litetitle,avatar,detail,mes_avatar,mes')->find();
 
 
         $this->success('返回成功', $data ? $data->toArray() : []);
@@ -154,18 +157,68 @@ class Content extends Api
      *
      * http://dev.fadmin.com/index.php/api/content/headimg
      */
-    public function headimg(){
+    public function headimg()
+    {
 
         $model = model('Attachment');
 
         $data = collection($model->where(['category' => 'categoryHead'])->order('weigh desc,id desc')->field('url,filename')->select())->toArray();
 
-        $host = $_SERVER['HTTP_HOST']; 
-        if ($data){
-          foreach($data as &$item){
-                $item['url'] = 'http://'.$host.$item['url'];
-          }
-        } 
+        $host = $_SERVER['HTTP_HOST'];
+        if ($data) {
+            foreach ($data as &$item) {
+                $item['url'] = 'http://' . $host . $item['url'];
+            }
+        }
         $this->success('返回成功', $data);
+    }
+
+
+    /**
+     *
+     * 最好加个频次限制 单个ip频繁提交
+     * 也可以前端加个临时的限制
+     *
+     * var form = new FormData();
+        form.append("name", "1");
+        form.append("email", "1");
+        form.append("message", "1");
+
+        var settings = {
+        "url": "http://dev.fadmin.com/index.php/api/content/submit_message",
+        "method": "POST",
+        "timeout": 0,
+        "processData": false,
+        "mimeType": "multipart/form-data",
+        "contentType": false,
+        "data": form
+        };
+
+        $.ajax(settings).done(function (response) {
+        console.log(response);
+        });
+     */
+    public function submit_message()
+    {
+
+        $model = model('app\admin\model\content\Message');
+
+        $name = $this->request->post("name");
+        if (!$name) {
+            $this->error(__('请填写完整信息'));
+        }
+        $email = $this->request->post("email");
+        if (!$email) {
+            $this->error(__('请填写完整信息'));
+        }
+        $message = $this->request->post("message");
+        if (!$message) {
+            $this->error(__('请填写完整信息'));
+        }
+
+
+        $result = $model->allowField(true)->save(['name' => $name, 'email' => $email, 'message' => $message]);
+        $this->success('返回成功', $result);
+
     }
 }

@@ -86,6 +86,7 @@ return [
     'Title'                                                 => '标题',
     'lTitle'                                                => '副标题',
     'Avatar'                                                => '图片',
+    'AvatarMes'         => '详情图',
     'Avatar2'                                                => '图片（列表页头图）',
     'Content'                                               => '内容',
     'Append'                                                => '追加',
