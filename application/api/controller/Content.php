@@ -37,7 +37,7 @@ class Content extends Api
         //查询news
         $models = $model->where(['status' => 'normal']);
 
-        $data = collection($models->order('weigh desc,id desc')->limit($offset, $limit)->field('id,title,litetitle,avatar,detail')->select())->toArray();
+        $data = collection($models->order('weigh desc,id desc')->limit($offset, $limit)->select())->toArray();
         //model被重置了
         $models = $model->where(['status' => 'normal']);
         $host = $_SERVER['HTTP_HOST'];
