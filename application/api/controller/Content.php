@@ -148,7 +148,11 @@ class Content extends Api
         }
         $models = $model->where(['status' => 'normal', 'id' => $id]);
         $data = $models->field('id,cateid,title,litetitle,avatar,detail,mes_avatar,mes')->find();
-
+        if ($data){
+            $host = $_SERVER['HTTP_HOST'];
+            $data = $data->toArray();
+            $data['mes_avatar'] = 'http://' . $host . $data['mes_avatar'];
+        }    
 
         $this->success('返回成功', $data ? $data->toArray() : []);
     }
