@@ -25,13 +25,15 @@ class Content extends Api
         //分页列表
         $model = model('app\admin\model\content\News');
 
-        $pageSize = 10;
+        $pageSize = $this->request->get("page_size");
         $page = $this->request->get("page");
 
         if (!$page) {
             $page = 1;
         }
-
+        if (!$pageSize){
+             $pageSize =10;
+        }
         $offset = ($page - 1) * $pageSize;
         $limit = $pageSize;
         //查询news
@@ -101,13 +103,15 @@ class Content extends Api
         $model = model('app\admin\model\content\Product');
 
         $cate = $this->request->get("cate");
-        $pageSize = 10;
+        $pageSize =  $this->request->get("page_size");
         $page = $this->request->get("page");
 
         if (!$page) {
             $page = 1;
         }
-
+        if (!$pageSize){
+            $pageSize = 10;
+        }
         $offset = ($page - 1) * $pageSize;
         $limit = $pageSize;
         //查询news
