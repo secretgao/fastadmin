@@ -48,7 +48,7 @@ class Content extends Api
 
         }
         $num = $models->count();
-        $this->success('返回成功', ['list' => $data, 'count' => $num, 'page' => $page]);
+        $this->success('返回成功', ['list' => $data, 'count' => $num, 'page' => $page,'total_page'=>ceil($num/$pageSize)]);
     }
 
     /**
@@ -130,7 +130,7 @@ class Content extends Api
 
         }
         $num = $models->count();
-        $this->success('返回成功', ['list' => $data, 'count' => $num, 'page' => $page]);
+        $this->success('返回成功', ['list' => $data, 'count' => $num, 'page' => $page,'total_page'=>ceil($num/$pageSize)]);
     }
 
     /**
