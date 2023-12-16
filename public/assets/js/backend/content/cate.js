@@ -32,7 +32,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                 return value.toString().replace(/(&|&amp;)nbsp;/g, '&nbsp;');
                             }
                         },
-                        // {field: 'nickname', title: __('Nickname')},
+                        {field: 'show_num', title: __('ShowNum')},
                         // {field: 'flag', title: __('Flag'), formatter: Table.api.formatter.flag},
                         // {field: 'image', title: __('Image'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image},
                         {field: 'weigh', title: __('Weigh')},

@@ -4,6 +4,7 @@ return [
     'User id'                                               => '会员ID',
     'Username'                                              => '用户名',
     'Nickname'                                              => '昵称',
+    'ShowNum'                                              => '产品显示数',
     'Password'                                              => '密码',
     'Sign up'                                               => '注 册',
     'Sign in'                                               => '登 录',

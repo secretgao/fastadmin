@@ -10,7 +10,8 @@ use app\common\controller\Api;
 class Content extends Api
 {
 
-    protected $noNeedLogin = ['news', 'cate', 'product', 'product_detail', 'news_detail', 'headimg','submit_message'];
+    protected $noNeedLogin = ['news', 'cate', 'product', 'product_detail', 'news_detail', 'headimg',
+        'submit_message', 'keyword_asso', 'cate_v2'];
 
     /**
      *
@@ -31,8 +32,8 @@ class Content extends Api
         if (!$page) {
             $page = 1;
         }
-        if (!$pageSize){
-             $pageSize =10;
+        if (!$pageSize) {
+            $pageSize = 10;
         }
         $offset = ($page - 1) * $pageSize;
         $limit = $pageSize;
@@ -50,7 +51,7 @@ class Content extends Api
 
         }
         $num = $models->count();
-        $this->success('返回成功', ['list' => $data, 'count' => $num, 'page' => $page,'total_page'=>ceil($num/$pageSize)]);
+        $this->success('返回成功', ['list' => $data, 'count' => $num, 'page' => $page, 'total_page' => ceil($num / $pageSize)]);
     }
 
     /**
@@ -103,13 +104,14 @@ class Content extends Api
         $model = model('app\admin\model\content\Product');
 
         $cate = $this->request->get("cate");
-        $pageSize =  $this->request->get("page_size");
+        $pageSize = $this->request->get("page_size");
         $page = $this->request->get("page");
+        $keyword = $this->request->get("keyword");
 
         if (!$page) {
             $page = 1;
         }
-        if (!$pageSize){
+        if (!$pageSize) {
             $pageSize = 10;
         }
         $offset = ($page - 1) * $pageSize;
@@ -118,6 +120,9 @@ class Content extends Api
         $models = $model->where(['status' => 'normal']);
         if ($cate) {
             $models->where(['cateid' => $cate]);
+        }
+        if ($keyword) {
+            $models->where('title', 'like', '%' . str_replace("/*", "/", $keyword) . '%');
         }
 
         $data = collection($models->order('weigh desc,id desc')->limit($offset, $limit)->field('id,cateid,title,litetitle,avatar,detail')->select())->toArray();
@@ -134,7 +139,7 @@ class Content extends Api
 
         }
         $num = $models->count();
-        $this->success('返回成功', ['list' => $data, 'count' => $num, 'page' => $page,'total_page'=>ceil($num/$pageSize)]);
+        $this->success('返回成功', ['list' => $data, 'count' => $num, 'page' => $page, 'total_page' => ceil($num / $pageSize)]);
     }
 
     /**
@@ -153,11 +158,11 @@ class Content extends Api
         $models = $model->where(['status' => 'normal', 'id' => $id]);
         $data = $models->field('id,cateid,title,litetitle,avatar,detail,mes_avatar,mes')->find();
         $result = [];
-        if ($data){
+        if ($data) {
             $host = $_SERVER['HTTP_HOST'];
             $result = $data->toArray();
             $result['mes_avatar'] = 'http://' . $host . $data['mes_avatar'];
-        }    
+        }
 
         $this->success('返回成功', $result);
     }
@@ -189,23 +194,23 @@ class Content extends Api
      * 也可以前端加个临时的限制
      *
      * var form = new FormData();
-        form.append("name", "1");
-        form.append("email", "1");
-        form.append("message", "1");
-
-        var settings = {
-        "url": "http://dev.fadmin.com/index.php/api/content/submit_message",
-        "method": "POST",
-        "timeout": 0,
-        "processData": false,
-        "mimeType": "multipart/form-data",
-        "contentType": false,
-        "data": form
-        };
-
-        $.ajax(settings).done(function (response) {
-        console.log(response);
-        });
+     * form.append("name", "1");
+     * form.append("email", "1");
+     * form.append("message", "1");
+     *
+     * var settings = {
+     * "url": "http://dev.fadmin.com/index.php/api/content/submit_message",
+     * "method": "POST",
+     * "timeout": 0,
+     * "processData": false,
+     * "mimeType": "multipart/form-data",
+     * "contentType": false,
+     * "data": form
+     * };
+     *
+     * $.ajax(settings).done(function (response) {
+     * console.log(response);
+     * });
      */
     public function submit_message()
     {
@@ -230,4 +235,100 @@ class Content extends Api
         $this->success('返回成功', $result);
 
     }
+
+
+    /**************************v2.0版本***********************************/
+
+    /**
+     * http://dev.fadmin.com/index.php/api/content/keyword_asso
+     * http://dev.fadmin.com/index.php/api/content/keyword_asso?keyword=张
+     * 关键词分类
+     * 当内容是空的时候随机返回十个
+     * 内容不为空的时候like 10个
+     *
+     * @author xiaoyu37@leju.com  12/16/23
+     */
+    public function keyword_asso()
+    {
+
+        $model = model('app\admin\model\content\Product');
+        $models = $model->where(['status' => 'normal']);
+        $keyword = $this->request->get("keyword");
+
+        if ($keyword) {
+            $models->where('title', 'like', '%' . str_replace("/*", "/", $keyword) . '%');
+            $data = collection((array)$models->order('weigh desc,id desc')->limit(10)->field('title')->select())->toArray();
+        } else {
+            //不想要随机可以注释代码关闭
+            $res = $models->order('weigh desc,id desc')->limit(30)->field('title')->select();
+            $max = count($res) > 10 ? 10 : count($res);
+            $keys = array_rand(array_keys($res), $max);
+            $data = [];
+            foreach ($keys as $key => $val) {
+                $data[] = $res[$val];
+            }
+        }
+        $data = array_column($data, 'title');
+        $this->success('返回成功', $data);
+    }
+
+
+    /**
+     * http://dev.fadmin.com/index.php/api/content/cate_v2
+     * 分类并且根据分类返回指定数量的类型 如果不指定 默认配置10个
+     *
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     *
+     * 返回 根据id可以直接进入详情
+        //    "code": 1,
+        //    "msg": "返回成功",
+        //    "time": "1702711925",
+        //    "data": [
+        //        {
+        //            "id": 2,
+        //            "name": "分类2",
+        //            "show_product": [
+        //                {
+        //                    "id": 4,
+        //                    "title": "张四"
+        //                },
+        //                {
+        //                    "id": 3,
+        //                    "title": "张三"
+        //                }
+        //            ]
+        //        },
+        //    ]
+     * @author xiaoyu37@leju.com  12/16/23
+     */
+    public function cate_v2()
+    {
+
+        $model = model('app\admin\model\content\Category');
+        $model_pro = model('app\admin\model\content\Product');
+        $model_pro = $model_pro->where(['status' => 'normal']);
+
+        $data = collection($model->where(['status' => 'normal'])->order('weigh desc,id desc')->select())->toArray();
+
+        $res = [];
+        foreach ($data as $key => $val) {
+
+            $temp = ['id' => $val['id'], 'name' => $val['name'], 'show_product' => []];
+
+            if ($val['show_num']) {
+                $data = collection((array)$model_pro->where(['cateid' => $val['id']])->order('weigh desc,id desc')
+                    ->limit($val['show_num'])->field('id,title')->select())->toArray();
+
+                $temp['show_product'] = $data ?: [];
+            }
+
+            $res[] = $temp;
+        }
+
+        $this->success('返回成功', $res);
+    }
+
+
 }

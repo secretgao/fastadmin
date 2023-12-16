@@ -74,7 +74,7 @@ class Category extends Backend
             }
 
             $total = count($list);
-            $result = array("total" => $total, "rows" => []);
+            $result = array("total" => $total, "rows" => $list);
             return json($result);
         }
         return $this->view->fetch();
