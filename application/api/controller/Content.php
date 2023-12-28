@@ -257,10 +257,10 @@ class Content extends Api
 
         if ($keyword) {
             $models->where('title', 'like', '%' . str_replace("/*", "/", $keyword) . '%');
-            $data = collection((array)$models->order('weigh desc,id desc')->limit(10)->field('title')->select())->toArray();
+            $data = collection((array)$models->order('weigh desc,id desc')->limit(10)->select())->toArray();
         } else {
             //不想要随机可以注释代码关闭
-            $res = $models->order('weigh desc,id desc')->limit(30)->field('title')->select();
+            $res = $models->order('weigh desc,id desc')->limit(30)->select();
             $max = count($res) > 10 ? 10 : count($res);
             $keys = array_rand(array_keys($res), $max);
             $data = [];
