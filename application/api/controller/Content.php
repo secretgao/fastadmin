@@ -252,7 +252,7 @@ class Content extends Api
     {
 
         $model = model('app\admin\model\content\Product');
-        $models = $model->where(['status' => 'normal']);
+        $models = $model->field('id,title')->where(['status' => 'normal']);
         $keyword = $this->request->get("keyword");
 
         if ($keyword) {
@@ -268,8 +268,12 @@ class Content extends Api
                 $data[] = $res[$val];
             }
         }
-        $data = array_column($data, 'title');
-        $this->success('返回成功', $data);
+        $res = [];
+        foreach ($data as $key => $val) {
+            //$data[] = $res[$val];
+            $res[] = ['id' => $val['id'], 'title' => $val['title']];
+        }
+        $this->success('返回成功', $res);
     }
 
 
